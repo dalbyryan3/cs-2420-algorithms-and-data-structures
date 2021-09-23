@@ -1,0 +1,7 @@
+digraph Heap {
+	node [shape=record]
+
+	node0 [label = "<f0> |<f1> 2|<f2> "]
+	node0:f0 -> node1:f1
+	node1 [label = "<f0> |<f1> 3|<f2> "]
+}

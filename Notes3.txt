@@ -1,0 +1,391 @@
+Graphs with weighted edges- can associate a cost with traversing an edge
+psuedocode:
+
+class Node{
+	E data;
+	Set<Edge> neighbors;
+}
+
+class Edge{
+	Node otherEnd;
+	double weight;
+}
+
+Dijkstra's Algorithm- Cheapest path algorithm 
+Similar to breath first search except we use priority queues. 
+
+There are lots of ways to represent a graph:
+class Graph<E>{
+	Set<Node> vertices; 
+}
+
+class Node{
+	E data;
+	Set<Edge> neighbors; (This could also be: LinkedList<Edge> neighbors; or something else)
+}
+
+Set of neighbor vertices is called an adjacency list.(typically better for sparse graphs(and the type of questions associated with these types of graphs))
+Can also represent all neighbor vertices as an adjacency matrix.(typically better for dense graphs(and the type of questions associated with these types of graphs))
+
+Sparse graph- smaller number of edges coming out of most vertices
+Dense graph- larger number of edges coming out of most vertices(vertices have an edge with many other vertices) 
+
+Topological Sort- graph with no cycles, orders vertices such that if there is a path from vertex A to vertex B, then A appears before B in the sorted order.
+Must define indegree for a vertices- which is the number of edges the vertex has incoming. (Can save this as part of the Node class and can be computed as the graph is constructed)
+Topological Sort:
+Phase 1: step through each node in the graph- if node has indegree of 0 add it to the queue
+Phase 2: operate on queue until empty-
+	While Q is not empty:
+		1. Poll queue, add it to sorted list
+		2. Vist the node's neighbors, decrease their indegree by 1
+		3. If neighbor's new indegree is 0, enqueue it
+
+
+
+		
+Hash Tables- a storage data structure- uses a hash function to place items into array
+-Underlying data structure is just an array, requires all data types to have a hash function 
+-Insert/delete/lookup all constant time
+Mapping to Smaller Indicies
+x % size gives us a valid index in the array
+Can use natural indicies of integers extracted using mod(mod by the length of storage array to stay in bounds of array) 
+Hash function- a method that generates an integer index given any object 
+	Input- any object	Output-int
+Hash Function Rules: 
+	-Always returns the same number for the same object(The reverse is not necessarily true, thus hash functions are one way)(Given a hash value we can't reconstruct the object)
+	-Good hash functions return evenly distributed numbers in the integer range(Because collisions are avoided more effectively)
+	Java hashCode- every object has a method hashCode that by default will return the memory address of the object
+	-If you override equals you must override hashCode
+	-If you override hashCode you must override equals
+	
+Collisions: When non-equal objects map to the same index
+	Resolving collisions:
+		Linear Probing- when adding if spot is already taken step forward one index at a time until an empty space is found(with wraparound)
+		-Will affect contains, must do similar process during contains to check if value is in it(Go forward(from initial hash value given from hash function) until value is found or empty spot is found)(with wraparound)
+		-Will affect remove- lazy deletion- don't actually remove item, put a flag instead to indicate if removed(just deleting by setting to null will affect adding/searching(looking for null spot))(with wraparound)
+
+Performance Cost- define lambda, the fraction of the table that is full(called the load factor) (0<=lambda<=1)
+For each probe in to the table, the probablity that spot is occupied is lambda- Slightly misleading because of clustering
+Clustering:
+	If an item's natural spot is taken, it goes in the next open spot, making the cluster bigger, bigger the cluster the more likely we are to hit it(and thus making it bigger)(Feedback loop)
+		
+Quadratic Probing- Attempts to deal with the clustering problem 
+If hash(item) = H and the cell at H is occupied:
+	try H + 1^2
+	then H + 2^2
+	then H + 3^2, etc...
+	wrap around array if necessary
+	
+Is quadratic probing guaranteed to find an open spot?
+	Yes, but only if our table size is a prime number and the load factor(lambda) is < 0.5 
+	This will guarantee no cell is visted twice and every cell is visted
+	
+Negative Hash Values: Can help spread values accross the entire int range, can use abs() to get a valid index from the value even if it is negative.
+
+Resizing the Table: As with an ArrayList we must reize when the hash table gets full, when lambda >= 0.5 we have to resize.(Thus we always have some unused space overhead for quadratic probing hash tables)
+Rehashing- We can't just copy everything over for a new hash table size.  Must follow quadratic probing again when readding items.
+
+Quadratic probing does not eliminate the clustering problem completely, this is called secondary clustering(Items with the same index will still examine the same alternative indicies)
+
+Alternative: Make each cell in a bucket to hold multiple items(just put in same bucket just different cell)
+How big should each bucket be(too big- wasted space, too small- more rehashing)- use a linked list that can grow as needed coming from each bucket.(Seperate Chaining)
+Seperate Chaining:
+Insert: find bucket by hashing, add item to list- O(1)
+Search: find bucket by hashing, linear scan of list- O(1) if list length is small constant
+Delete: find bucket by hashing, linear scan of list- O(1) if list length is small constant
+
+lambda is now redefined as the average length of linked lists 
+rehash when lambda gets too large
+
+Seperate Chaining(More robust, possible "pointer chasing" and more calls to new) and Quadratic Probing(Items reside close to eachother in memory but possible clustering) are both used in practice for implementing hash tables.
+
+ASCII- defines an encoding for characters(a char is just a small integer)
+A string is just an array of char.
+
+
+Generally:
+Hash Tables- When you need to find an item quickly.
+Trees- When you want to range queries(>=x, <= y, etc.)
+Lists- When insertion order/index matters
+
+Priority Queues:
+Supported Operations:
+add
+findMin
+deleteMin
+
+Complete Tree: All levels are full except for possibly the bottom level(levels filled left to right)(By definition is a balanced tree)
+Height- floor(logN) can give us the height of a complete tree where N is total number of nodes(floor- round down, log base 2)
+Left Index = i * 2 + 1	can give us the left child of a given node i
+Right Index = i * 2 + 2 	can give us the right child of a given node i
+Parent = (i - 1) / 2	can give us the parent of a given node i(assuming integer division)
+Do not actually have to have a linked structure in order to traverse a complete tree using the properties above(thus can put them in an array which is nicer than traversing a traditional linked structure where nodes are scattered throughout memory)
+Operations of a complete tree are thus at most O(logN)
+
+Binary Heap- 
+structure- It is a complete tree 
+order- The data in any node is less than or equal to the data of its children
+-smallest item will be at the root
+Called a min-heap
+a max-heap would have the opposite order property
+
+When making a heap deal with structure property first then swap to keep order.(like when adding or removing)
+Cost of Add:
+Worst Case: O(logN)
+Average Case: O(1) (it has been proven that 1.6 swaps are needed on average(for any N))
+Cost of Remove:
+Worst Case: O(logN)
+Average Case: O(logN) (On average more swaps are needed than add, rarely terminates more than 1-2 levels from bottom)
+
+Binary Heaps:
+add: O(1)- percolate up(average of 1.6 swaps)
+findMin: O(1)- access the root
+deleteMin: O(logN)- percolate down
+
+buildHeap- given an existing set of items how can we make a heap
+-Can say any array is a heap(just typically not ordered)
+-To order look at last node that has children(parent of last leaf node)(start at this node since leaf nodes can't percolate down) and go up from there and percolate down to get a heap
+-Can be done in place(no 2x space overhead)
+-Using the above method buildHeap is worst case O(N) on existing array
+
+Sorting with a heap: Heapsort
+O(N) to build heap from existing array, and then(+) O(NlogN) to deleteMin each item so O(NlogN) total
+After one call to deleteMin(temporarily store value) we have the last spot of the array empty then we percolate and put our stored value into the empty spot and then we continue deleting min values and repeating(We will consider the part of the array where the delted min eventually goes as "sorted") in-place 
+Heap sort: Worst case: O(NlogN): higher contant factor than mergesort and quicksort, is also in place.  Comparable to mergesort and quicksort.
+
+A doubly-ended priority queue:
+add
+find Max
+find Min
+deleteMax
+deleteMin
+
+Min and max items can be found in constant time with a min-max heap
+
+Min-Max Heap
+For any node E at even depth, E is the minimum element in its subtree
+For any node O at odd depth, O is the maximum element in its subtree
+The root is considered to be at even depth(zero)
+
+adding to min-max heap
+	compare with direct parent and swap if necessary based on parent being min or max node, new node is now either a min-node or a max-node
+	percolate up every other level(if min-node percolate up min levels, if max-node percolate up max levels)
+
+deleteMax(Min is analogous)
+	locate node X(node containing max item)
+	replace X's item with last item in tree(last index)
+	determine if new item in X is violating heap order with its children if so swap the contents of X with the contents of its largest child
+	percolate new item X down max levels
+	if lowest max level reached, restore order with lowest min level(if applicable)
+
+
+File Compression
+Data Storage- All data in a computer is stored in binary 
+ASCII- each character corresponds to one byte
+Reducing traffic on network and internet and reducing disk space requirements
+Lossless- Allows original information to be completely reconstructed from the compressed information 
+Lossy- Sacrifice some of the orginal information to make file a lot smaller
+
+Two phases: Compression(encode data in fewer bits) and Decompression(decode back into original data)
+Allow number of bits for each character to vary, instead of using full 8 for every character
+Represent common characters with fewer bits and represent rare characters with more bits
+What defines common characters? Depends on the file.
+Each compressed file has a different encoding.  We must include the "code" with the compressed file.
+
+Binary Trie- is a binary tree in which a left brach represents a 0 and a right brach represents a 1
+Thus, The path to a node represents its encoding
+
+Decoding- read the bits of the compressed file one at a time(On a 0 go left, on a 1 go right, when leaf node reached we have char contained at that node and start back at root for next bit).  Tree is in the compressed file its path defines the encoding
+
+Huffman's Algorithm- Count the frequency of each different character, contruct a binary trie with the highest frequencies near the top, lowest near the bottom.  Include this tree data with the compressed file.
+
+Building the tree:
+	Start with a separate tree for each character.
+	Each tree is a single root node holding the character with its frequency
+	 
+	Merge two lowest-weight trees together into one
+	Make a new parent with their combined weight.  the smaller node on the left, larger on the right
+	Must use a specific tie-breaker
+	Repeat
+
+Decompression needs the same tree in order to decode- must add "header" information that describes the tree, the header must not be compressed.
+
+Hexadecimal- Base- 16 number system (0-9 and A(10) through F(15)) 
+One hex digit corresponds to one half-byte(4 bits)
+
+Huffman Coding:
+Encoding(compression)
+	Construct Huffman tree(repeatedly merge lowest frequency nodes)
+	Write header(info to reconstruct tree)
+	Write encoded chars(use tree to compute new character codes)
+
+Decoding(decompression)
+	Read Header(Reconstruct tree)
+	While(read encoded bits)
+		Traverse tree to leaf 
+		Write decoded char
+	Read EOF(end of file) code(done)
+
+Command-Line Arguments:
+public static void main(String[] args)
+Can provide arguments to main via the command line: args is an array of strings typed on the command-line
+
+in your project/bin directory(class you run must contain main):
+cd workspace/project/bin		bin is where compiled files are, these files still must be run through java
+java myPackage/myProgram arg1 other_arg
+
+args[0] contains the String "arg1"
+args[1] contains the String "other_arg" etc.
+
+args allows for changing how the program is run without recompiling 
+	
+Map
+A map data structure saces <key, value> pairs
+
+Ex. a dictionary: map<string, string> dictionary;   the word maps to definition
+Ex. HashMap<int, String>
+Ex. TreeMap<int, String>
+
+Comparator operates on keys only, each "entry" saves the key and the value 
+
+can add key value pair and then get the value associated with a key
+<X,Y> we see we can have multiple generic typed things(map from one generic type to another generic type)
+	
+Strings are immutable in Java- once created can't be altered
+When we "alter" a String in Java a new String is really just created 
+
+StringBuilder- can grow and shrink (like an ArrayList but for Strings)
+
+
+
+Regular Expressions(Regex)- a pattern that defines wether a certain string matches a specific pattern
+String literals- abc only matches "abc"
+gray|grey matches "gray" or "grey"
+Can create subexpressions like the following:
+	(CS|cs)2420 is (fun|hard)
+	
+Bracket Expressions-
+	matches a single character within the []
+	Can define ranges:
+	[a-z] matches any single lowercase letter
+	[a-zA-Z0-9] matches any single letter or digit
+	
+Counting: 
+	? matches the preceding 0 or 1 times
+	+ matches the preceding 1 or more times
+	* matches the preceding 0 or more times
+	{m,n} matches the preceding >= m, <=n times
+	
+Escaping:
+	[0-9] \+ [0-9]
+
+String.matches(pattern) where pattern is a regular expression can be used in Java 
+
+
+
+Stability of a sort- a stable sorting algorithm keeps duplicates in their orignal relative order
+For simple things stabilty doesn't matter like sorting just integers. (Element we are sorting is the key)
+Stability matters when sorting complex items on some key.
+Stable(if implemented carefully): mergesort, insertion sort, selection sort
+Not stable: quicksort, heapsort
+
+Non-Comparison Sorting:
+	these sorts can be faster than O(NlogN)
+	
+Radix Sort:
+(for integers)
+	put items in buckets based on their last digit, then take them back out bucket by bucket(now in a semi-sorted order just based on last digit)
+	next we look at the second to last digit and place items in buckets based on that digit, we then take them back out bucket by bucket again(must take out in order they were put in in order to keep order dicated by past sort steps)
+	repeat this process until we get through all digit places of the integers
+	Complexity:
+		Every pass requires O(N) to place items into buckets 
+		number of passes = max number of digits 
+		O(kN) where k = number of digits
+		placing items into, and taking out of buckets must be stable
+	
+Bucket Sort- Radix Sort is a special case of bucket sort
+	Must pick some number of "buckets" and a way to "bucketize" 
+	Sort each bucket simultaneously (multi-core)
+	O(N) to bucketize each item
+	O(b * ?) to sort each bucket b = number of buckets, ? is typically a constant
+	O(b + N) to collect each bucket
+	
+	Useful when: 
+		Can take advantage of parallel computing
+		When number of buckets is around N and items are evenly distributed
+	
+	
+2 times as many transistors does not mean 2 times as fast, means we're getting lots of cores have to utilize them
+
+So far we have been doing Serial computing, we do a task, then next task, then next task etc.
+
+Parallel Computing- Some tasks executed simultaneously (reduces total time)
+Unless we program for parallelism we don't get it(typically some languages may try to parallelize)
+Ex:
+CPU1:
+	sum1 = sumFirstHalf();
+	wait for CPU2
+	sum = sum1 + sum2
+CPU2:
+	sum2 = sumSecondHalf();
+Ex:
+	mergesort:(can do middle two tasks(denoted by *) at once)
+	Divide array in half
+	Mergesort left half *
+	Mergesort right half *
+	Merge two halves(must wait until both * are completed to do task)
+	
+Multi-threading is the ability of a computer to execute multiple threads concurrently
+
+Multi-threading in Java
+Create Thread
+Give Thread some work to do
+Thread.start()	-> is a non-blocking statement meaning it returns right away even though new thread is not done yet
+If we need to wait for it Thread.join()	-> is a blocking statement just like any other statement you're used to, calling thread waits until other Thread finishes 
+
+The interface Runnable has a single method run()
+The class Thread can take any Runnable object in its constructor
+Invoking a Thread's start method creates a new system thread which runs the code defined in the Runnables run method.  The system will attempt to run threads simultaneously(many other threads may be using the core(s))
+
+Concurrency- Multiple tasks running (Threads can be interrupted, preempted at any time)
+	Achieved by either OS rapidly switching threads/processes or Two threads/processes executing simultaneously
+	
+Simultaneous- actually at the same time (same cycle).  Simultaneity is concurrency.  Gives performance gains
+	Concurrency is not (necessarily) simultaneous
+Simultaneous Multi-threading (SMT)- allows for multiple threads in same core (hyper-threading)
+Multicore- multiple CPU's(each with all CPU things, cache, etc.) that can be hooked up together along with more CPU things, cache, etc. to connect them all
+
+Amdahl's Law- Basic interpretation for mergesort problem- if x% of workload is parallelizable can reduce runtime by at most x% with more threads
+
+Dynamic Workload Distribution- put small units of work into a queue, each thread runs a loop that will get a task off the queue execute a task until queue is empty.
+Multiple threads running this code simultaneously- have to avoid interference on queue
+
+Race Condition- two threads that are operating concurrently try to change/use the value of shared data at the same time.
+Critical Section: any portion of code in which a race condition can occur
+For guaranteed correctness no more than one thread must be in a critical section at a time
+
+val = val + 5;
+Translates rougly into:
+load $reg1, &val
+add $reg1, 5
+store $reg1, &val
+ 
+If say val is shared by multiple threads then: val = val + 5; is a critical section (the load then add then store represents the critical section)
+
+A mutex(mutual exclusion) object provides threads the ability to "lock" a section of code
+java.util.concurrent.Semaphore provides mutex functionality:
+In example:
+Semaphore lock = new Semaphore(1); (Specifying 1 to the semaphore indicates only one thread can be in critical section at once, thus 1 specifies the semaphore to have mutex functionality)
+lock.acquire();
+//critical section
+lock.release();
+
+acquire(): 
+	If the lock is open, this thread locks it, and proceeds	
+	If the lock is closed, this thread waits
+release(): 
+	Releases the lock
+	Wakes up at least one of the threads waiting 
+	
+
+

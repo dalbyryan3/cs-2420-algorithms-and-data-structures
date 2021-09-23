@@ -1,0 +1,186 @@
+CS 2420 Notes 
+Ryan Dalby u0848407
+
+Algorithms can help solve a problem in an efficent manner
+N represents the number of items we are looking at
+The performance of an algorithm can depend on N thing we are looking at
+Efficency can be measured by runtime, program memory/space, programmer effort.  What is efficent can vary by situation.
+
+Software dev flow: Requirement gathering, planning/design/analysis, contruction, testing, and maintenance
+
+Refrence Types and Memory in Java:
+All non-primitive types in Java, i.e. objects, stored in a variable are refrence variables(refrence types) and thus assignment means a memory address is passed,
+two different variables can hold the same object memory address(refrence variable/type).  
+Thus declaring a refrence variable does not construct an object(must use new and construct object).
+Passing an object into a method/function will pass its memory address.  
+In java by passing a memory address we don't have to worry about memory allocation(like freeing memory, the JVM does this by looking at when there is no longer any refrences to an objects then reuses that memory).  
+Using the dot operator to index a primitive field associated with the object we will get a copy.  
+
+OOP advantages: 
+Inheritance- can inherit certain properties of something else, code reuse. 
+Encapsulation- hiding of data:getters and setters. 
+Abstraction- Using objects can allow us to more easily manage and write code.  Objects more relatably represent stuff.
+Polymorphism- Determines an objects type at runtime.  Can override things like methods and have multiple methods with the same name but different signature.  
+Every object in Java is polymorphic and inherits from Object and everything is polymorphed from it when an object is created.
+
+Abstract Class- has abstract methods, declaring a method abstract means derived classes must implement that method.  
+Cannot create an object of that abstract class but can create objects of classes that implement it.
+
+An Interface- an abstract class that only has abstract method and only has constant fields. 
+
+Generics:
+ArrayList is a generic class- it is why we always use <> when we use ArrayList
+the source code for ArrayList may look like:
+class ArrayList<T>
+{
+	T storage[];
+	
+	public void add(T item)
+	{...}
+}
+
+By using <> we can make a generic class that takes arbitrary objects thus it can work with arbitrary objects.(The T in this case will essentially be passed by the object type passed in.)
+ 
+ 
+Inheritance with generics:
+For example:
+ArrayList<Triangle> is not an ArrayList<Shape> even though a Triangle is a Shape.
+Let's say you have a method that accepts ArrayList<Shape> it would only accept ArrayList<Shape> objects and not ArrayList<Triangle>
+even though Triangle inherits from Shape and a method that accepts Shapes could accept a Triangle, in this case we are dealing with a generic object(ArrayList<>).
+
+Can use the follwing work around for the situation above when using your generic class if you want to also accept inherited or parent objects, we also can use the following to control what types are accepted. 
+<? extends Shape>  can accept Shape or anything extended from Shape(Will allow for classes inherited from Shape) (Upper bounded)
+
+<? super Circle> can now use Object, Shape, and Circle (Will allow super classes of Circle) (Lower bounded)
+
+The ? is a wildcard placeholder in place of generic placeholder T(can be any placeholder) we typically use ? instead of T when it doesn't matter what the generic type is. 
+
+
+Java does generics so we can be more specific and have more control over what we are passing into something.(Thus we can get compile time errors instead of runtime errors because we have extra control over what objects are passed in)
+Java only allows generics with objects not primitive types, so for primitives you can do a work around by using a wrapper class to turn primitive types into corresponding wrapper objects to be passed into something such as ArrayList<>.
+
+Can do generic static methods too.
+Trying to make a Generic min method to find the min of a list of an arbitrary object we see
+we have to know what is considered smaller so we can accept a function object to determine what is considered smaller given an object
+
+Function objects- an object that defines a single method: A comparator(provides a way of comparing two things) is an example of a function object.
+Can pass a comparator object(we create) that implements Comparator Interface to allow us to determine what is smaller(and what is considered equal and what is considered bigger by using this comparator to do the comparison)
+
+Timing in Java
+Timing is inaccurate in Java up to 500 ns error(not much time for humans but a large amount in computer terms)- accuracy highly machine dependent
+
+
+Collection (Interface)
+Underlying stucture is unknown
+Very unspecific data structure, implementation can vary widely.
+ArrayList, PriorityQueue, LinkedList, TreeSet all implement Collection 
+
+To grow an array it takes N steps where N is how many objects need to be copied to a new array.  Doubling the size of the array to grown is a good tradeoff between how often we need to grow and how much space we allocate.
+Finding and removing from a list with indicies(an array) and thus shifting values costs N steps
+Adding costs the same every time unless you are growing the array
+
+Iterator- provides retrival of items from another data structure
+User of collection will ask collection for an iterator which is an object that has private access to collection but can be used by the outside world.
+To implement Collection the methods hasNext(determines if iteration is complete), next(gets next item), and remove(removes last item seen) must be implemented.
+(keep in what index the iterator is looking at if you remove something from the collection, you may have to shift the iterator position to read the correct next value)
+the syntax for an enhanced for loop: for(something x : things), is using an iterator behind the scenes(calls next on the iterator(implementing iterator) of your things which implements collection).
+
+-How does the iterator gets access to internals of data structure: 
+This happens by an Internal Private class- define a class inside of a class, the inside class, the internal private class is our iterator which implements iterator and it has access to fields of the class it is nested in.
+The internal Private Class cannot be seen by the outside world.  So in our class nesting the iternal private class we have a public method that returns our iterator but of the general type iterator(the iterator type we implented from)(this method is required when implementing a collection).
+The method returning the iterator is of general type iterator as the outside world only knows about general iterator as our iterator was a private internal class. 
+
+
+Algorithms:
+Algorithms don't always take N step for N items. 
+The algorithmic complexity- as problem size grows(N) how many steps does it take (looking at this behavior allows us to find the right algorithm)
+Algorithmic complexity is the number one thing that determines time to solve problem, most other factors secondary.
+We look at the shape of the problem size(N) versus steps to solve(directly related to time to solve)
+Comparing complexity:
+For large N any linear curve is outclassed(linear curve slower than logarithmic) by a logarithmic curve.
+Common Complexity Classes:
+Logarithmic: log2(N)  (We will assume log base2 in this class for log with no subscript)
+Linear complexity: N
+Linearithmic: N log2(N)
+Quadratic, Cubic, etc.:(Usually not effective at solving in reasonable time): N^2, N^3
+
+Big-Oh notation: Used to capture the dominant term in the algorithim, assuming large N
+Write like(These are also ordered quickest to slowest): O(1), O(logN), O(N), O(N logN), O(N^2)
+
+Ex: Loop that runs N times has an algorithimic complexity of O(N)
+
+How we can classify range of possible performance: Worst-Case, Average-Case, Best-Case
+
+Sorting: Often times our end goal isn't something that's sorted but having something sorted can greatly improve our ability to solve something reasonably 
+To insert a value into a sorted array(and keep it sorted) we have to find the right position and insert the value in that spot.
+
+Insertion Sort(compare and swap until at right spot then go to next item): Cost depends on how sorted array already is.  Costs less if more sorted and costs more if not very sorted
+Measuring Unsortedness- Count inversions (for a given pair of number, check if they are in the correct order relative to eachother, if not it is an inversion)
+Completely sorted will have 0 inversions, if in reverse sorted order inversions will be at a maximum.
+
+Shell Sort: Like Insertion Sort but looks items far apart(big gap size) from eachother, then decreases gap size(/2) and repeats, eventually gap size is 1 then we are mostly sorted,
+then we loop again which is essentially a normal insertion sort(since gap size is 1)  which works well on something that is mostly sorted.
+Complexity of Shell Sort is O(N^1.5), by defining gaps differently can get complexity to O(N^1.25), for a reasonable moderate size can be faster than O(NlogN) but for large values is slower
+Keep in mind real life complexity can vary from mathematical calculated values due to various factors
+
+Recursion:
+Solve a problem by finding a simpler version of it, use same solver on the simpler 
+A recursive method calls itself, each recurisve call must move toward some solution, that can be solved without recursion or answer is known(this simpler problem is called the base case).
+Ex: factorial(N) = N * factorial(N-1) Where base case: if (N<=1) return1;
+
+When a method is invoked a unique "frame" is created, contains local vaiables and state(frame is put on stack).  When method finishes the frame is removed from the stack.
+Recursive method not really calling itself just creating different frames(completely seperate frames with different arguments and properties) on the stack each time it is called
+(Frames cannot be cleared until one above it(one it called) returns a value, this is why we need a base case(that we eventually trend towards for every recursive frame) to solve, 
+the base case then returns then every frame beneath it can return as the one above it returns until the original returns). 
+Stack overflow is when we have infinite recrusion, and we are not making progress towards the base case.
+
+Ex: Not a practical example but shows recursion:
+int divide(int A, int B)
+{
+	if(B==0)
+	{
+		throw error...
+	}
+	if(A < B)
+	{
+		return 0;
+	{
+	if(A == B)
+	{
+		return 1;
+	}
+	return 1 + divide(A-B, B);
+} 
+
+Recursion can be costly: method invocation is costly, costs more to create a frame on the stack than just looping through a loop.
+Recursive methods may have weird parameters to make it recrusive.(like an index to keep track of where you are, these details are unnecessary for most users thus a driver method may be used)
+To avoid these wierd parameters we can use Driver methods that essentially just invoke the method you want to call with few less arguments because the method plugs certain arguments in for you.
+
+Mergesort
+Mergesort(Divide and conquer algorithim; recursion divides it up; returns of each frame from recursion(triggering the merge) is the conquer/combine part to get solution):
+Cut array in half, sort left half(using same alogrithm; this is recursive) , sort the right half(using same alogrithm; this is recursive), merge the two sorted halves(merge is defined)
+Base case is when we are looking at arrays of size 1 which are sorted since there are no other entries in the array. 
+From the base case all the returns are run and each smaller array is merged with eachother which builds the sorted array until we get through all of the frames and then we have our solution.
+
+We can call another sort method once mergesort has reduced problem to a smaller problem size where a different sorting algorithim may be faster to solve
+
+Mergesort requires a 2x space overhead
+-When merging uses a temporary array to store portions of sorted array
+-Use .set on a passed in arrayList(full of nulls so memory is allocated in driver method that calls the sort rather than in sort method) to add to arrayList 
+rather than .add on an arrayList created within method as .add and having to allocate temporary arrayList within method will become costly.  
+
+Mergesort has bigO complexity of O(NlogN)
+
+Randomly Shuffling an Array
+Can randomly shuffle an array by swapping values at random indicies with other values at random indicies that are both within the indicie range of the array.
+
+
+Quicksort
+Another recursive sort like mergesort(quicksort is also divide and conquer), its advantage is it can be done "in place" meaning we don't need the temporary space that mergesort needs.
+Quicksort does a process called partitioning which chooses an arbitrary pivot to be compared while left and right indexers go from opposite sides of the array until they meet comparing their current value to the pivot and swapping as they go.
+When the indexers meet we found where the pivot must go.
+
+Partioning cost is O(N) and our pivot choice determines the performance of the algorithim(we can get a better pivot choice without going through all the array to find median(optimum pivot choice) by sampling a few values then taking that median)
+
+For Quicksort with a good pivot we can get  O(NlogN) complexity
+Making the quicksort non deterministic(i.e. choosing truly random pivot) will usually prevent the worst case O(N^2) of Quicksort.

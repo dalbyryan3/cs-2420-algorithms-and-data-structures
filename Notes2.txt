@@ -1,0 +1,166 @@
+Memory
+Most data in your program resides in memory at some point. Memory is a giant block bytes.
+Most things are comprised of multiple bytes.
+Each byte has its own address. An address is simply a number(0 to memorysize-1)
+Memory allocation in java:
+new keyword- finds a block of contiguous memory that is big enough to hold what you're creating
+the variable you assigned to that new object gets the memory address of the first address of the memory block
+
+Arrays in memory: items in arrays are contiguous(next to each other in memory)
+Where new allocates memory is not known(just finds a block of contiguous memory), just the address and that all its elements are in contiguous memory locations
+
+Linked Structures
+Data storage in which individual items have links(refrences) to other items.
+Items can be dynamically added or removed to the structure.
+A class called say, LinkedNode has fields of ID and name and creates an object of itself(Linked List)(or an ArrayList<LinkedList> to hold multiple refrences) within its defining class that can define its refrences to another thing.
+Generally: Linked Structures have a refrence to another one of themselves.(It is not recursion though.)
+
+LinkedList
+Generally: a Linked List has nodes, a single node has some data plus a refrence to another node.
+Keep track of first node(head) and we can follow path of refrences until we get to where we want.(Are at end of refrences when next refrence is null(last item contains refrence to null))
+Nodes are not typically next to eachother in memory because of how the new operator allocates memory.
+
+Linked List vs array/ArrayList
+To get to an item in a Linked List the cost is O(N), to index out of an array/ArrayList the cost is constant time O(1)
+Removing or adding(say, adding/removing to first spot) in a Linked List only costs O(1) while it costs O(N) for an array/ArrayList(have to shift values over).
+Resizing is done on a per-element basis
+Outer class say its called, LinkedList keeps track of head, node, size and defines all other methods.  
+Inside LinkedList we would have a private class say its called, LinkedNode that has the value(data field) and one or more LinkedNode(s)(links).
+
+Doubly Linked List
+Must define head and tail of Doubly Linked List.
+Optimizes getting/removing last item as we don't have to traverse whole linked list from beginning.
+
+
+
+Stacks- A data structure in which insertion and removal is restricted to the top or end of the list(First in, last out or also known as last in, first out)
+Has just a few things you can do to it:
+push- adds element to the top of the stack(increment top index then place item at top)
+pop- removes and returns most recently added element from stack(get item at index top, then decrement top(just by moving top down removes it))
+peek- returns but does not remove the most recently added element from the stack(get item at index top, do not decrement top)
+These operations must be O(1), very efficent data structure if we only expect to access the top element 
+A stack is similar to a linked list in a lot of ways other than it has more limited funcitonality 
+
+Can use an array or a linked list as the backing structure for the stack.
+When using push with a linked list as the backing structure it has a higher cost per push(same bigO complexity though(stil O(1))(since essentially it is resized each time) compared to
+pushing with an array backing which does not resize until it needs to(worst case for a single push call with an array backing structure is O(N) but technically less cost per non resizing push compared to a linked list backing structure
+(both backing structures have same complexity for push when averaged(still O(1) even when taking into account resizing, either one at a time resize(linked list) or when needed larger resize(array))
+(Linked list as backing structure can be nice since we know it will always have the same cost to push compared to how an array as a backing sturcture could have O(N) for a call of push)
+
+Call Stack
+Methods return in reverse order in which they were called, also first in last out(FILO) (ex. main will be first in and last out)
+
+Brace Matching - all { must be matched with a } (same with (), []) compiler builds a stack of braces it goes over that will be used to check that the code can be interpreted correctly(that it is formatted correctly)
+
+Infix notation typical way to write an expression(what most people are used to)(Read left to write but must read whole thing to get context, i.e. operator precedence) 
+ex: a + b (plus symbol in between a and b)
+Postfix Notation("Reverse Polish Notation)- go left to right, think of a stack you're building, and when an operator is seen we pop twice and apply operator to what was popped, add result to stack and continue
+This notation is much more condensed in the way it explicitly encodes order of operations
+ex. 1 2 3 * +  here (2 3 *) is evaluated first then result is added to 1 (equivalent to 1+(2*3) )(think building a stack as mentioned above)
+
+Queues- First in, first out(FIFO) data structure
+offer- adds an item to the back of the queue
+poll- removes and returns the item at the front
+peek- reutrns item at the front 
+These operations must be O(1) (constant time complexity)
+
+Circular Array
+Can use a circular array hold values of a queue(as backing structure of queue).  
+A circular array must be traversed with care since our pointer to the front is not necessarily less than the pointer to the back of our data. 
+To loop through and index a circular array:
+(While our index does not equal the front and if equals array length then go to index zero(connect loop back to start))
+Or use this to index out of circular arr: arr[(front + i) % arr.length]  (% operator can perform same desired operation)
+Using this wraparound gives time complexity of O(1) to add/remove unless you have to grow then that operation is O(N)
+
+*Alternatively just use a Doubly Linked List as the backing structure for the queue(Probably the best way to do it) 
+
+Priority Queues- another type of queue but where each element has "priority" associated with it
+
+
+
+Trees
+Lists are one of the most basic containers of data. Very simple requirement on the structure
+Trees impose a more intricate structure
+Trees are recursive in nature, any node is a sub-tree of some larger tree (except the very top node)
+A node consists of a data element and zero or more sub-trees
+The relationship between nodes encodes a relationship between data
+Every node has exactly one parent except for the root which has none.  Thus there is exactly one path from the root to any other node.
+Usually we look at problems on parts of trees (a sub-tree of the tree) 
+
+Binary Trees- Special class of tree in which a node can have at most two children
+Essentially a Binary Tree can be implemented almost exactly like a linked list except with "left" and "right" reference nodes and different names(like root for beginning instead of head, etc.)
+Can traverse a tree using recursion because of how recursion essentially builds a stack, we traverse both left and right recursively and our base case is when we get to a null node
+Depth-First Traversal(DFT)- 3 Different ways to do a depth-first traversal:
+Pre-order: use node before traversing its children
+In-order: traverse left child then use node then traverse right child
+Post-order: use node after traversing both children
+
+Example: Expression Trees- Can phrase a mathematical expression as an expression tree with internal nodes of operators and end(leaf) nodes of numbers, 
+then can evaluate expression by traversing tree using post-order DFT. (Each sub operation is like that operation in parentheses in the math expression)
+
+Recall:
+Sorted Array- Fast search(binary search), slow add/remove
+Sorted linked list- slow search(binary not available),slow add/remove
+Unsorted array- Fast add, slow remove, slow search
+
+What about a Tree?
+Binary Search Tree(BST)- Defines right and left child means something(i.e. one is side means greater one means less than)(BST means nodes are ordered)(define left is less than item at node, right is greater than item at node)
+BST performance depends on the depth of the tree and how balanced the tree is(perfectly balanced tree means each time you go left or right we cut the items remaining to look at in half)
+BST performance- Perfectly balanced tree can allow for O(logN) searching complexity, we should get close to balanced with un-ordered data being added.
+Worst Case performance for a BST happens when we pass in perfectly ordered data we essentially get a linked list(perfectly unbalanced BST) and O(N) searching complexity.
+Summary BST search performance:
+Best Structured Tree: O(logN)
+Average Structured Tree: O(logN)
+Worst Structured Tree: O(N)
+
+BST Deletion:
+Different cases: Deletion of leaf node, deletion of node with 1 child, deletion of node with 2 children(look at successor to replace deleted node)
+Successor- Smallest item in right sub-tree 
+Deletion cost: For a balanced tree is O(logN) for all deletion cases above if implemented optimally 
+
+Balanced trees:
+Let us define good balance as(Can define other ways)- The height of any pair of sibilings should differ by no more than one, define an empty subtree to have a height of -1
+Self-Balancing BST- Balancing will not be free, but will be slower by a constant factor, if input order is random (Thus not changing bigO complexity)
+Self-Balancing Tree with this definition of good balance is called an AVL(Adelson-Velskii&Landis) Tree 
+An AVL tree performs tree rotations, after modification(add/remove), rebalance the deepest unbalanced node(if difference in height of any two sibilings becomes > 1).
+Tree Rotations: (Essentally we do local, not very costly operations to keep tree balanced)
+Single Rotations- Left and Right variants
+Double Rotations- Have a balance rule that guarantees balance as defined at all times
+
+
+Graphs: 
+A tree is a graph with more restrictions. 
+A graph is a set of vertices(nodes) connected by edges(links)
+Definitions(related to graphs):
+A graph: (V,E) 
+	V is a set of vertices, E is set of edges
+An edge: (v1, v2)
+	v1 and v2 are in V 
+Weight is cost of traveling an edge.
+Cycle-if a path exists from a node to itself.
+DAG- Directed Acyclic Graph- important subclass of a graph
+
+Graphs have no root, must store all nodes directly
+i.e.:
+class Node{
+E data;
+Set<Node> neighbors;
+}
+ 
+Any problem with a starting state, a goal state, and options as to which direction to take for each step, can be represented with a graph.
+
+There may be more than one path between nodes, we often are interested in path length(defined as number of edges traversed) and usually even more interested in shortest path.
+Can use DFT(Depth-First Traversal) to traverse(Like a tree)- Can prevent getting stuck in a cycle by having a flag that the node has been visited.
+We can have the starting node be specified by external user and then perform some operation.
+By "marking" the visited nodes in some way we can tell how we got somewhere(and prevent cycles), can then reconstruct path taken.
+
+Can also use Breadth-First Search(BFS) to traverse- visit next closest node instead of deeper nodes first
+BFS process:
+Create empty queue, put starting node on the queue, while !Q.empty():
+{ 
+	poll current node, for each vistited neighbor of current node:
+		{mark neighbor has been visted, put neighbor on back of Q}
+}
+
+BFS is not recursive, just run until queue is empty. (We see BFS uses a queue while DFT uses a stack(call-stack-i.e. recursion))
+
